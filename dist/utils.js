@@ -3,7 +3,7 @@
  * 
  * @author ysk
  * @create 2015-12-17
- * @update 2015-12-17
+ * @update 2015-12-18
  */
 
 (function() {
@@ -53,7 +53,10 @@
         return status;
     }
 
-    //
+    //判断是否为js对象
+    utils.isPlainObject = function (value) {
+        return !!value && Object.prototype.toString.call(value) === '[object Object]';
+    },
     
     // 清除字符串两边的空格
     utils.trim = function(str) {
