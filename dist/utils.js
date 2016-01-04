@@ -53,10 +53,22 @@
         return status;
     }
 
+    // Object
+    // --------------------
+
     //判断是否为js对象
     utils.isPlainObject = function (value) {
         return !!value && Object.prototype.toString.call(value) === '[object Object]';
-    },
+    };
+    // 获取对象的所有属性
+    utils.getKeys = Object.keys || function (obj) {
+        var keys = [],
+            key = '';
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) keys.push(key);
+        }
+        return keys;
+    };
     
     // 清除字符串两边的空格
     utils.trim = function(str) {
