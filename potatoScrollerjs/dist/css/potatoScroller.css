@@ -27,10 +27,10 @@
 	opacity: 0.01;
 	width: 10px;
 	visibility : hidden\9; /* Target only IE7 and IE8 with this hack */
-	-webkit-transition    : 1s;
-	-moz-transition       : 1s;
-	-o-transition         : 1s;
-	transition            : 1s;
+	-webkit-transition    : .2s;
+	-moz-transition       : .2s;
+	-o-transition         : .2s;
+	transition            : .2s;
 	-moz-border-radius    : 5px;
 	-webkit-border-radius : 5px;
 	border-radius         : 5px;
