@@ -24,7 +24,7 @@
 	background: #bfbfbf;  /* Target only IE7 and IE8 with this hack */
 	background: rgba(0,0,0,.25);
 	filter:alpha(opacity=10);
-	opacity: 0.1;
+	opacity: 0.01;
 	width: 10px;
 	visibility : hidden\9; /* Target only IE7 and IE8 with this hack */
 	-webkit-transition    : .2s;
