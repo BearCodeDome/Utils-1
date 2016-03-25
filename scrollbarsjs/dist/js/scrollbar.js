@@ -228,9 +228,6 @@ var PotatoScroll = (function() {
 	    	this.contentScrollTop = content.scrollTop;
 	    	direction = this.contentScrollTop > this.previousPosition ? 'down' : this.contentScrollTop < this.previousPosition ? 'up' : 'same';
 	    	this.previousPosition = this.contentScrollTop;
-	    	// if (direction !== 'same') {
-
-	    	// }
 
 	    	this.maxSliderTop = this.panelHeight - this.sliderHeight;
 	    	this.sliderTop = this.maxScrollTop === 0 ? 0 : this.contentScrollTop * this.maxSliderTop / this.maxScrollTop;
@@ -268,6 +265,24 @@ var PotatoScroll = (function() {
 	    },
 
 	    /**
+	      @method scroll
+	      @private
+	      @example
+	          $(".nano").nanoScroller({ scroll: 'top' });
+	     */
+
+	    scroll: function() {
+			if (!this.isActive) return;
+
+			this.sliderY = Math.max(0, this.sliderY);
+			this.sliderY = Math.min(this.maxSliderTop, this.sliderY);
+			this.$content.scrollTop(this.maxScrollTop * this.sliderY / this.maxSliderTop);
+			this.updateScrollValues();
+			this.setOnScrollStyles();
+			return this;
+	    },
+
+	    /**
 	      生成绑定事件
 	      @method createEvents
 	      @private
@@ -284,12 +299,73 @@ var PotatoScroll = (function() {
 	    				_this.setOnScrollStyles();
 
 	    				if (e==null) return;
-	    			}
+	    			};
 	    		})(this),
 	    		resize: (function(_this) {
 	    			return function() {
 	    				_this.reset();
-	    			}
+	    			};
+	    		})(this),
+	    		down: (function(_this) {
+	    			return function(e) {
+	    				_this.isBeingDragged = true;
+	    				_this.offsetY = e.pageY - _this.$slider.offset().top; // 鼠标在滚动条上的位置
+	    				if (!_this.$slider.is(e.target)) {
+	    					_this.offsetY = 0;
+	    				}
+	    				_this.$panel.addClass(_this.options.activeClass);
+	    				_this.doc.on('mousemove',_this.events['drag']).on('mouseup',_this.events['up']);
+	    				_this.body.on('mouseenter',_this.events['enter']);
+	    				return false;
+	    			};
+	    		})(this),
+	    		drag: (function(_this) {
+	    			return function(e) {
+	    				_this.sliderY = e.pageY - _this.$el.offset().top - _this.panelTop - (_this.offsetY || _this.sliderHeight/2);
+	    				_this.scroll();
+	    				return false;
+	    			};
+	    		})(this),
+	    		up: (function(_this) {
+	    			return function(e) {
+	    				_this.isBeingDragged = false;
+	    				_this.$panel.removeClass(_this.options.activeClass);
+	    				_this.doc.off('mousemove',_this.events['drag']);
+	    				_this.body.off('mouseenter',_this.events['enter']);
+	    				return false;
+	    			};
+	    		})(this),
+	    		enter: (function(_this) {
+	    			return function(e) {
+	    				var _ref;
+	    				if (!_this.isBeingDragged) return;
+
+	    				if ((e.buttons || e.which) !== 1) {
+			              return (_ref = _this.events)['up'].apply(_ref, arguments);
+			            }
+	    			};
+	    		})(this),
+	    		panedown: (function(_this) {
+	    			return function(e) {
+	    				_this.sliderY = (e.offsetY || e.originalEvent.layerY) - (_this.sliderHeight * 0.5);
+			            _this.scroll();
+			            _this.events.down(e);
+			            return false;
+	    			};
+	    		})(this),
+	    		wheel: (function(_this) {
+	    			return function(e) {
+	    				var delta;
+			            if (e == null) {
+			              return;
+			            }
+			            delta = e.delta || e.wheelDelta || (e.originalEvent && e.originalEvent.wheelDelta) || -e.detail || (e.originalEvent && -e.originalEvent.detail);
+			            if (delta) {
+			              _this.sliderY += -delta / 3;
+			            }
+			            _this.scroll();
+			            return false;
+	    			};
 	    		})(this)
 	    	};
 	    },
@@ -318,8 +394,41 @@ var PotatoScroll = (function() {
 
 	    	this.win.on('resize',events['resize']);
 
+	    	this.$slider.on('mousedown',events['down']);
+	    	this.$panel.on('mousedown', events['panedown']).bind('mousewheel DOMMouseScroll', events['wheel']);
 
 	    	this.$content.on('scroll mousewheel DOMMouseScroll touchmove', events['scroll']);
+	    },
+
+
+	    /**
+		  停止所有的事件，隐藏滚动条
+		  @method stop
+		  @chainable
+		  @example
+		      $(".potato-scrollbar").potatoScroller({ stop: true });
+		 */
+
+		stop: function() {
+			if (cAF && this.scrollRAF) {
+				cAF(this.scrollRAF);
+				this.scrollRAF = null;
+			}
+			this.stopped = true;
+			this.removeEvents();
+			this.$panel.hide();
+			return this;
+		},
+
+		/**
+	      @method restore
+	      @private
+	     */
+
+	    restore: function() {
+	      this.stopped = false;
+	      this.$panel.show();
+	      this.addEvents();
 	    },
 
 	    /**
@@ -334,6 +443,14 @@ var PotatoScroll = (function() {
 	    		content = this.content,
 	    		contentStyle = content.style,
 	    		contentStyleOverflowY = contentStyle.overflowY;
+
+	    	if (!this.$el.find('.' + this.options.panelClass).length) {
+	    		this.renderBar().stop();
+	    	}
+
+	    	if (this.stopped) {
+	    		this.restore();
+	    	}
 
 	    	if (BROWSER_IS_IE7) {
 	    		_this.$content.css({
@@ -404,6 +521,7 @@ var PotatoScroll = (function() {
 	    	return this;
 	    }
 
+
 	}
 
 	return PotatoScroll;
@@ -416,6 +534,16 @@ $.fn.potatoScroller = function(settings) {
 		if (!(scrollbar = this.potatoScroll)) {
 			options = $.extend({},defaults,settings);
 			this.potatoScroller = scrollbar = new PotatoScroll(this,options);
+		}
+
+		if (settings && typeof settings === 'object') {
+			$.extend(scrollbar.options, settings);
+			if (settings.stop) {
+	          return scrollbar.stop();
+	        }
+	        if (settings.destroy) {
+	          return scrollbar.destroy();
+	        }
 		}
 
 		return scrollbar.reset();

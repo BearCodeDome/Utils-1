@@ -44,3 +44,8 @@
 	-webkit-border-radius : 3px;
 	border-radius         : 3px;
 }
+
+.potato-scrollbar:hover > .scrollbar-panel{
+  visibility : visible\9; /* Target only IE7 and IE8 with this hack */
+  opacity    : 0.99;
+}
