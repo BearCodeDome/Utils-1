@@ -1,0 +1,11 @@
+
+
+.slider-container {
+	width: 400px;
+	height: 300px;
+}
+
+.slide:nth-child(2n) {
+    height: 500px;
+    line-height: 500px;
+}

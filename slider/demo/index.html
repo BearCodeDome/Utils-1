@@ -1,0 +1,58 @@
+<!DOCTYPE HTML> 
+<html>
+<head>
+<title>Swipe 2</title>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'/> 
+<link href='../dist/css/slider.css' rel='stylesheet'/>
+<link href='style.css' rel='stylesheet'/>
+
+</head>
+<body>
+
+<h1>Swipe 2</h1>
+
+
+
+<div id='mySwipe' style='max-width:500px;margin:0 auto' class='swipe slider-container'>
+  <div class='slider-wrapper swipe-wrap'>
+    <div><b>0</b></div>
+    <div><b>1</b></div>
+    <div><b>2</b></div>
+    <div><b>3</b></div>
+    <div><b>4</b></div>
+  </div>
+</div>
+
+
+
+<div style='text-align:center;padding-top:20px;'>
+  
+  <button onclick='slider.prev()'>prev</button> 
+  <button onclick='slider.next()'>next</button>
+
+</div>
+
+
+
+
+<!-- <script src="../src/jquery-1.11.3.min.js"></script> -->
+<script src='../dist/js/slider.js'></script>
+<script>
+
+// pure JS
+var elem = document.getElementById('mySwipe');
+window.slider = Slider(elem, {
+  startSlide: 0,
+  auto: 3000,
+  // continuous: true,
+  // disableScroll: true,
+  // stopPropagation: true,
+  // callback: function(index, element) {},
+  // transitionEnd: function(index, element) {}
+});
+
+// with jQuery
+// window.slider = $('#mySwipe').slider().data('Slider');
+
+</script>
